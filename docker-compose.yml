@@ -1,0 +1,47 @@
+version: '3.7'
+services:
+    nginx:
+        container_name: nginx-levaai
+        restart: always
+        build:
+            context: ./nginx
+            dockerfile: Dockerfile
+        volumes:
+            - ./levaai:/var/www/levaai
+            - ./nginx/logs/:/var/log/nginx
+            - ./nginx/sites/:/etc/nginx/conf.d
+            - ./nginx/data/ssl:/etc/nginx/ssl
+        ports:
+            - "443:443"
+        networks:
+            - backend
+
+    php-fpm:
+        container_name: php-fpm-levaai
+        restart: always
+        build:
+            context: ./php-fpm
+            dockerfile: Dockerfile
+        expose:
+            - "9000"
+        volumes:
+            - ./levaai:/var/www/levaai
+        networks:
+            - backend
+
+    redis:
+        container_name: redis-levaia
+        restart: always
+        build:
+            context: ./redis
+            dockerfile: Dockerfile
+        volumes:
+            - ./redis:/data
+        ports:
+            - "6379:6379"
+        networks:
+            - backend
+
+networks:
+    backend:
+        driver: bridge
