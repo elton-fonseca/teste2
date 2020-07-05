@@ -1,23 +1,36 @@
 version: '3.7'
 services:
+    db:
+        container_name: db-treinaweb-administrativo
+        image: mysql
+        command: ["--default-authentication-plugin=mysql_native_password"]
+        ports:
+            - "3306:3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: treinaweb
+            MYSQL_USER: treinaweb
+            MYSQL_PASSWORD: treinaweb
+        networks:
+            - backend
     nginx:
-        container_name: nginx-levaai
+        container_name: nginx-treinaweb-administrativo
         restart: always
         build:
             context: ./nginx
             dockerfile: Dockerfile
         volumes:
-            - ./levaai:/var/www/levaai
+            - ./projeto:/var/www/projeto
             - ./nginx/logs/:/var/log/nginx
             - ./nginx/sites/:/etc/nginx/conf.d
             - ./nginx/data/ssl:/etc/nginx/ssl
         ports:
-            - "443:443"
+            - "80:80"
         networks:
             - backend
 
     php-fpm:
-        container_name: php-fpm-levaai
+        container_name: php-fpm-treinaweb-administrativo
         restart: always
         build:
             context: ./php-fpm
@@ -25,12 +38,12 @@ services:
         expose:
             - "9000"
         volumes:
-            - ./levaai:/var/www/levaai
+            - ./projeto:/var/www/projeto
         networks:
             - backend
 
     redis:
-        container_name: redis-levaia
+        container_name: redis-treinaweb-administrativo
         restart: always
         build:
             context: ./redis
